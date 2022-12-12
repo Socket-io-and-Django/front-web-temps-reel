@@ -58,9 +58,21 @@ const handleChatForm = () => {
                     error.value = 'Nombre de kilomètres non valide'
                 }
             } else if (askedInfoType === 'do_revision') {
-                console.log('ici');
                 if ([1, 2].includes(parsedValue)) {
                     emitToServer('send_do_revision', parsedValue)
+                } else {
+                    error.value = 'Réponse différent de 1 ou 2'
+                }
+            } else if  (askedInfoType === 'usage_type') {
+                console.log(askedInfoType);
+                if ([1, 2, 3].includes(parsedValue)) {
+                    emitToServer('send_usage_type', parsedValue)
+                } else {
+                    error.value = 'Réponse différent de 1, 2 ou 3'
+                }
+            } else if (askedInfoType === 'contact_type') {
+                if ([1, 2].includes(parsedValue)) {
+                    emitToServer('send_contact_type', parsedValue)
                 } else {
                     error.value = 'Réponse différent de 1 ou 2'
                 }
@@ -153,6 +165,46 @@ socket.on('ask_do_revision', (res) => {
     })
     inputType.value = 'number'
     askedInfoType = 'do_revision'
+})
+
+socket.on('ask_usage_type', (res) => {
+    console.log(res.txt);
+    messages.value.push({
+        from: res.from,
+        txt: res.txt
+    })
+    inputType.value = 'number'
+    askedInfoType = 'usage_type'
+})
+
+socket.on('ask_contact_type', (res) => {
+    console.log(res.txt);
+    messages.value.push({
+        from: res.from,
+        txt: res.txt
+    })
+    inputType.value = 'number'
+    askedInfoType = 'contact_type'
+})
+
+socket.on('send_contact_email', (res) => {
+    console.log(res.txt);
+    messages.value.push({
+        from: res.from,
+        txt: res.txt
+    })
+    inputType.value = 'number'
+    askedInfoType = 'contact_type'
+})
+
+socket.on('send_contact_number', (res) => {
+    console.log(res.txt);
+    messages.value.push({
+        from: res.from,
+        txt: res.txt
+    })
+    inputType.value = 'number'
+    askedInfoType = 'contact_type'
 })
 </script>
 
