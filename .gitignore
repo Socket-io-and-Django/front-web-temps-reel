@@ -11,6 +11,8 @@ fron-web-real/node_modules
 # init project files
 package-lock.json
 package.json
+!fron-web-real/package-lock.json
+!fron-web-real/package.json
 
 
 # local env files
