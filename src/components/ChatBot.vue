@@ -12,40 +12,34 @@ const inputType = ref('text')
 const error = ref('')
 let askedInfoType = ''
 let vehiculeInfo = {}
+let availableAppointmentDatesIndex = []
+let availableAppointmentDates = []
 const serverTextColor = 'blue'
 const chatContainer = ref(null)
 
 const emitToServer = (emitType, value) => {
     socket.emit(emitType, value)
-    messages.value.push({
-        from: 'user',
-        txt: chatText.value
-    })
+    if (value !== '') {
+        messages.value.push({
+            from: 'user',
+            txt: emitType === 'send_last_maintenance_date' ? `${value.getDate()}/${value.getMonth() + 1}/${value.getFullYear()}` : chatText.value
+        })
+    }
     chatText.value = ''
     error.value = ''
 }
 
 const handleChatForm = () => {
     if (chatText) {
-        // socket.emit('chat_message', chatText.value)
-        // chatText.value = ''
         if (inputType.value === 'number') {
             let parsedValue = parseInt(chatText.value)
             if (askedInfoType === 'help_choice') {
                 if ([1, 2, 3, 4].includes(parsedValue)) {
-                    // socket.emit('send_help_type', parsedValue)
-                    // messages.value.push({
-                    //     from: 'user',
-                    //     txt: chatText.value
-                    // })
-                    // chatText.value = ''
-                    // error.value = ''
                     emitToServer('send_help_type', parsedValue)
                 } else {
                     error.value = 'Réponse pas entre 1 et 4'
                 }
             } else if (askedInfoType === 'year_choice') {
-                console.log(new Date().getFullYear());
                 if (parsedValue >= 1901 && parsedValue <= new Date().getFullYear()) {
                     emitToServer('send_vehicule_year', parsedValue)
                 } else {
@@ -63,8 +57,7 @@ const handleChatForm = () => {
                 } else {
                     error.value = 'Réponse différent de 1 ou 2'
                 }
-            } else if  (askedInfoType === 'usage_type') {
-                console.log(askedInfoType);
+            } else if (askedInfoType === 'usage_type') {
                 if ([1, 2, 3].includes(parsedValue)) {
                     emitToServer('send_usage_type', parsedValue)
                 } else {
@@ -75,6 +68,12 @@ const handleChatForm = () => {
                     emitToServer('send_contact_type', parsedValue)
                 } else {
                     error.value = 'Réponse différent de 1 ou 2'
+                }
+            } else if (askedInfoType === 'appointment_date') {
+                if (availableAppointmentDatesIndex.includes(parsedValue)) {
+                    emitToServer('send_maintenance_appointment_date', availableAppointmentDates[parsedValue - 1].id)
+                } else {
+                    error.value = 'Réponse différent des choix proposés'
                 }
             }
         } else if (inputType.value === 'date') {
@@ -105,17 +104,14 @@ const stopChat = () => {
 //     }
 // })
 watch(messages, () => {
-    console.log(chatContainer.value.scrollHeight);
     // chatContainer.value.scrollTop = chatContainer.value.scrollIntoView(false)
-    console.log('ici');
 }, { deep: true })
 
 socket.on('reset_chat', () => {
-    stopChat(socket)
+    stopChat()
 })
 
 socket.on('ask_help_type', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
@@ -125,7 +121,6 @@ socket.on('ask_help_type', (res) => {
 })
 
 socket.on('ask_vehicule_year', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
@@ -135,7 +130,6 @@ socket.on('ask_vehicule_year', (res) => {
 })
 
 socket.on('ask_last_maintenance_date', (res) => {
-    console.log(res.txt);
     vehiculeInfo = res.vehiculeInfo
     messages.value.push({
         from: res.from,
@@ -145,8 +139,41 @@ socket.on('ask_last_maintenance_date', (res) => {
     askedInfoType = 'maintenance_date'
 })
 
+socket.on('ask_appointment_date', (res) => {
+    vehiculeInfo = res.vehiculeInfo
+    availableAppointmentDates = res.txt
+    messages.value.push({
+        from: res.from,
+        txt: 'Voici les dates disponibles cette semaine :'
+    })
+    availableAppointmentDates.forEach((date, index) => {
+        let d = new Date(date.date)
+        availableAppointmentDatesIndex.push(index + 1)
+        messages.value.push({
+            from: "server",
+            txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+        })
+    });
+    inputType.value = 'number'
+    askedInfoType = 'appointment_date'
+})
+
+socket.on('maintenance_appointment_added', (res) => {
+    alert(res.txt)
+    stopChat()
+})
+
+socket.on('maintenance_appointment_added_by_other_user', () => {
+    if (askedInfoType === 'appointment_date') {
+        messages.value.push({
+            from: 'server',
+            txt: "Un des rendez-vous n'est plus disponible"
+        })
+        emitToServer('send_last_maintenance_date', vehiculeInfo.lastMaintenanceDate)
+    }
+})
+
 socket.on('ask_km_since_last_maintenance', (res) => {
-    console.log(res.txt);
     vehiculeInfo = res.vehiculeInfo
     messages.value.push({
         from: res.from,
@@ -157,7 +184,6 @@ socket.on('ask_km_since_last_maintenance', (res) => {
 })
 
 socket.on('ask_do_revision', (res) => {
-    console.log(res.txt);
     vehiculeInfo = res.vehiculeInfo
     messages.value.push({
         from: res.from,
@@ -168,7 +194,6 @@ socket.on('ask_do_revision', (res) => {
 })
 
 socket.on('ask_usage_type', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
@@ -178,7 +203,6 @@ socket.on('ask_usage_type', (res) => {
 })
 
 socket.on('ask_contact_type', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
@@ -188,7 +212,6 @@ socket.on('ask_contact_type', (res) => {
 })
 
 socket.on('send_contact_email', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
@@ -198,7 +221,6 @@ socket.on('send_contact_email', (res) => {
 })
 
 socket.on('send_contact_number', (res) => {
-    console.log(res.txt);
     messages.value.push({
         from: res.from,
         txt: res.txt
