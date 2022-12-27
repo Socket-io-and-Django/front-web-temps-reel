@@ -150,7 +150,7 @@ socket.on('ask_appointment_date', (res) => {
         let d = new Date(date.date)
         availableAppointmentDatesIndex.push(index + 1)
         messages.value.push({
-            from: "server",
+            from: 'server',
             txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
         })
     });
@@ -161,6 +161,7 @@ socket.on('ask_appointment_date', (res) => {
 socket.on('maintenance_appointment_added', (res) => {
     alert(res.txt)
     stopChat()
+    vehiculeInfo = {}
 })
 
 socket.on('maintenance_appointment_added_by_other_user', () => {
@@ -169,7 +170,7 @@ socket.on('maintenance_appointment_added_by_other_user', () => {
             from: 'server',
             txt: "Un des rendez-vous n'est plus disponible"
         })
-        emitToServer('send_last_maintenance_date', vehiculeInfo.lastMaintenanceDate)
+        socket.emit('send_last_maintenance_date', vehiculeInfo.lastMaintenanceDate)
     }
 })
 
