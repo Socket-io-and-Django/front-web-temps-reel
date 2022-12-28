@@ -18,6 +18,7 @@ const serverTextColor = 'blue'
 const chatContainer = ref(null)
 
 const emitToServer = (emitType, value) => {
+    console.log('emit_type', emitType);
     socket.emit(emitType, value)
     if (value !== '') {
         messages.value.push({
@@ -140,22 +141,33 @@ socket.on('ask_last_maintenance_date', (res) => {
 })
 
 socket.on('ask_appointment_date', (res) => {
+    console.log('ici');
     vehiculeInfo = res.vehiculeInfo
     availableAppointmentDates = res.txt
-    messages.value.push({
-        from: res.from,
-        txt: 'Voici les dates disponibles cette semaine :'
-    })
-    availableAppointmentDates.forEach((date, index) => {
-        let d = new Date(date.date)
-        availableAppointmentDatesIndex.push(index + 1)
+    console.log(availableAppointmentDates.length);
+    if (availableAppointmentDates.length) {
         messages.value.push({
-            from: 'server',
-            txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            from: res.from,
+            txt: 'Voici les dates disponibles cette semaine :'
         })
-    });
-    inputType.value = 'number'
-    askedInfoType = 'appointment_date'
+        availableAppointmentDates.forEach((date, index) => {
+            let d = new Date(date.date)
+            availableAppointmentDatesIndex.push(index + 1)
+            messages.value.push({
+                from: 'server',
+                txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            })
+        });
+        inputType.value = 'number'
+        askedInfoType = 'appointment_date'
+    } else {
+        alert(
+            `Rendez-vous indisponibles cette semaine et la semaine prochaine. 
+Veuillez réessayer à partir de la semaine prochaine`
+        )
+        stopChat()
+        vehiculeInfo = {}
+    }
 })
 
 socket.on('maintenance_appointment_added', (res) => {
