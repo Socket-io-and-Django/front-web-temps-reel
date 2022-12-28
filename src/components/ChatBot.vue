@@ -141,14 +141,12 @@ socket.on('ask_last_maintenance_date', (res) => {
 })
 
 socket.on('ask_appointment_date', (res) => {
-    console.log('ici');
     vehiculeInfo = res.vehiculeInfo
     availableAppointmentDates = res.txt
-    console.log(availableAppointmentDates.length);
     if (availableAppointmentDates.length) {
         messages.value.push({
             from: res.from,
-            txt: 'Voici les dates disponibles cette semaine :'
+            txt: 'Voici les dates disponibles :'
         })
         availableAppointmentDates.forEach((date, index) => {
             let d = new Date(date.date)
@@ -177,7 +175,9 @@ socket.on('maintenance_appointment_added', (res) => {
 })
 
 socket.on('maintenance_appointment_added_by_other_user', () => {
+    console.log(askedInfoType);
     if (askedInfoType === 'appointment_date') {
+        console.log('ici');
         messages.value.push({
             from: 'server',
             txt: "Un des rendez-vous n'est plus disponible"
