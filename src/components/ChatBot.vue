@@ -14,6 +14,8 @@ let askedInfoType = ''
 let vehiculeInfo = {}
 let availableAppointmentDatesIndex = []
 let availableAppointmentDates = []
+let availableRevisionDatesIndex = []
+let availableRevisionDates = []
 const serverTextColor = 'blue'
 const chatContainer = ref(null)
 
@@ -73,6 +75,12 @@ const handleChatForm = () => {
             } else if (askedInfoType === 'appointment_date') {
                 if (availableAppointmentDatesIndex.includes(parsedValue)) {
                     emitToServer('send_maintenance_appointment_date', availableAppointmentDates[parsedValue - 1].id)
+                } else {
+                    error.value = 'Réponse différent des choix proposés'
+                }
+            } else if (askedInfoType === 'revision_date') {
+                if (availableRevisionDatesIndex.includes(parsedValue)) {
+                    emitToServer('send_revision_date', availableRevisionDates[parsedValue - 1].id)
                 } else {
                     error.value = 'Réponse différent des choix proposés'
                 }
@@ -204,6 +212,52 @@ socket.on('ask_do_revision', (res) => {
     })
     inputType.value = 'number'
     askedInfoType = 'do_revision'
+})
+
+socket.on('ask_revision_date', (res) => {
+    console.log(res);
+    availableRevisionDates = res.txt
+    if (availableRevisionDates.length) {
+        messages.value.push({
+            from: res.from,
+            txt: 'Voici les dates disponibles :'
+        })
+        availableRevisionDates.forEach((date, index) => {
+            let d = new Date(date.date)
+            availableRevisionDatesIndex.push(index + 1)
+            messages.value.push({
+                from: 'server',
+                txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            })
+        });
+        inputType.value = 'number'
+        askedInfoType = 'revision_date'
+    } else {
+        alert(
+            `Rendez-vous indisponibles cette semaine et la semaine prochaine. 
+Veuillez réessayer à partir de la semaine prochaine`
+        )
+        stopChat()
+        vehiculeInfo = {}
+    }
+})
+
+socket.on('revision_appointment_added', (res) => {
+    alert(res.txt)
+    stopChat()
+    vehiculeInfo = {}
+})
+
+socket.on('revision_appointment_added_by_other_user', () => {
+    console.log(askedInfoType);
+    if (askedInfoType === 'revision_date') {
+        console.log('ici');
+        messages.value.push({
+            from: 'server',
+            txt: "Un des rendez-vous n'est plus disponible"
+        })
+        socket.emit('send_do_revision', 1)
+    }
 })
 
 socket.on('ask_usage_type', (res) => {
