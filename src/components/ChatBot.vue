@@ -12,10 +12,22 @@ const inputType = ref('text')
 const error = ref('')
 let askedInfoType = ''
 let vehiculeInfo = {}
+
 let availableAppointmentDatesIndex = []
 let availableAppointmentDates = []
+
 let availableRevisionDatesIndex = []
 let availableRevisionDates = []
+
+let availableRoadDatesIndex = []
+let availableRoadDates = []
+
+let availableOffroadDatesIndex = []
+let availableOffroadDates = []
+
+let availableSportDatesIndex = []
+let availableSportDates = []
+
 const serverTextColor = 'blue'
 const chatContainer = ref(null)
 
@@ -81,6 +93,26 @@ const handleChatForm = () => {
             } else if (askedInfoType === 'revision_date') {
                 if (availableRevisionDatesIndex.includes(parsedValue)) {
                     emitToServer('send_revision_date', availableRevisionDates[parsedValue - 1].id)
+                } else {
+                    error.value = 'Réponse différent des choix proposés'
+                }
+            } else if (askedInfoType === 'road_appointment_date') {
+                if (availableRoadDatesIndex.includes(parsedValue)) {
+                    emitToServer('send_road_appointment_date', availableRoadDates[parsedValue - 1].id)
+                } else {
+                    error.value = 'Réponse différent des choix proposés'
+                }
+            }
+            else if (askedInfoType === 'offroad_appointment_date') {
+                if (availableOffroadDatesIndex.includes(parsedValue)) {
+                    emitToServer('send_offroad_appointment_date', availableOffroadDates[parsedValue - 1].id)
+                } else {
+                    error.value = 'Réponse différent des choix proposés'
+                }
+            }
+            else if (askedInfoType === 'sport_appointment_date') {
+                if (availableSportDatesIndex.includes(parsedValue)) {
+                    emitToServer('send_sport_appointment_date', availableSportDates[parsedValue - 1].id)
                 } else {
                     error.value = 'Réponse différent des choix proposés'
                 }
@@ -267,6 +299,143 @@ socket.on('ask_usage_type', (res) => {
     })
     inputType.value = 'number'
     askedInfoType = 'usage_type'
+})
+
+socket.on('ask_road_appointment_date', (res) => {
+    console.log(res);
+    availableRoadDates = res.txt
+    if (availableRoadDates.length) {
+        messages.value.push({
+            from: res.from,
+            txt: 'Voici les dates disponibles :'
+        })
+        availableRoadDates.forEach((date, index) => {
+            let d = new Date(date.date)
+            availableRoadDatesIndex.push(index + 1)
+            messages.value.push({
+                from: 'server',
+                txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            })
+        });
+        inputType.value = 'number'
+        askedInfoType = 'road_appointment_date'
+    } else {
+        alert(
+            `Rendez-vous indisponibles cette semaine et la semaine prochaine. 
+Veuillez réessayer à partir de la semaine prochaine`
+        )
+        stopChat()
+        vehiculeInfo = {}
+    }
+})
+
+socket.on('road_appointment_added', (res) => {
+    alert(res.txt)
+    stopChat()
+    vehiculeInfo = {}
+})
+
+socket.on('road_appointment_added_by_other_user', () => {
+    if (askedInfoType === 'road_appointment_date') {
+        console.log('ici');
+        messages.value.push({
+            from: 'server',
+            txt: "Un des rendez-vous n'est plus disponible"
+        })
+        socket.emit('send_usage_type', 1)
+    }
+})
+
+socket.on('ask_offroad_appointment_date', (res) => {
+    console.log(res);
+    availableOffroadDates = res.txt
+    if (availableOffroadDates.length) {
+        messages.value.push({
+            from: res.from,
+            txt: 'Voici les dates disponibles :'
+        })
+        availableOffroadDates.forEach((date, index) => {
+            let d = new Date(date.date)
+            availableOffroadDatesIndex.push(index + 1)
+            messages.value.push({
+                from: 'server',
+                txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            })
+        });
+        inputType.value = 'number'
+        askedInfoType = 'offroad_appointment_date'
+    } else {
+        alert(
+            `Rendez-vous indisponibles cette semaine et la semaine prochaine. 
+Veuillez réessayer à partir de la semaine prochaine`
+        )
+        stopChat()
+        vehiculeInfo = {}
+    }
+})
+
+socket.on('offroad_appointment_added', (res) => {
+    alert(res.txt)
+    stopChat()
+    vehiculeInfo = {}
+})
+
+socket.on('offroad_appointment_added_by_other_user', () => {
+    console.log('BLABLABALBALA');
+    if (askedInfoType === 'offroad_appointment_date') {
+        console.log('ici');
+        messages.value.push({
+            from: 'server',
+            txt: "Un des rendez-vous n'est plus disponible"
+        })
+        socket.emit('send_usage_type', 2)
+    }
+})
+
+socket.on('ask_sport_appointment_date', (res) => {
+    console.log(res);
+    availableSportDates = res.txt
+    if (availableSportDates.length) {
+        messages.value.push({
+            from: res.from,
+            txt: 'Voici les dates disponibles :'
+        })
+        availableSportDates.forEach((date, index) => {
+            let d = new Date(date.date)
+            availableSportDatesIndex.push(index + 1)
+            messages.value.push({
+                from: 'server',
+                txt: `${index + 1} : ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
+            })
+        });
+        inputType.value = 'number'
+        askedInfoType = 'sport_appointment_date'
+    } else {
+        alert(
+            `Rendez-vous indisponibles cette semaine et la semaine prochaine. 
+Veuillez réessayer à partir de la semaine prochaine`
+        )
+        stopChat()
+        vehiculeInfo = {}
+    }
+})
+
+socket.on('sport_appointment_added', (res) => {
+    alert(res.txt)
+    stopChat()
+    vehiculeInfo = {}
+})
+
+socket.on('sport_appointment_added_by_other_user', () => {
+    console.log(askedInfoType);
+    if (askedInfoType === 'sport_appointment_date') {
+        console.log('ici');
+        messages.value.push({
+            from: 'server',
+            txt: "Un des rendez-vous n'est plus disponible"
+        })
+        socket.emit('send_usage_type', 3)
+    }
 })
 
 socket.on('ask_contact_type', (res) => {
