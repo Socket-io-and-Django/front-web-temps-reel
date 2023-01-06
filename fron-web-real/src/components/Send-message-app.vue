@@ -23,13 +23,15 @@ function onSubmit(e) {
 </script>
 
 <template>
-  <form v-on:submit="onSubmit" class="send-message">
-    <div class="message-control">
-      <label>Message</label>
-      <input type="text" name="text" v-model="text" placeholder="Message" />
-    </div>
-    <input type="submit" value="Send Message" class="btn btn-block" />
-  </form>
+  <div>
+    <form v-on:submit="onSubmit" class="send-message">
+      <div class="message-control">
+        <label>Message</label>
+        <input type="text" name="text" v-model="text" placeholder="Message" />
+      </div>
+      <input type="submit" value="Send Message" class="btn btn-block" />
+    </form>
+  </div>
 </template>
 
 <style scoped>

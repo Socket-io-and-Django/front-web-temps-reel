@@ -16,7 +16,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <button v-on:click="onClick" class="btn" v-bind:style="{background: props.color }">{{props.text}}</button>
+  <div>
+    <button v-on:click="onClick" class="btn" v-bind:style="{background: props.color }">{{props.text}}</button>
+  </div>
 </template>
 
 <style scoped>

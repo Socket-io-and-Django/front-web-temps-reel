@@ -8,10 +8,14 @@ const props = defineProps({
 </script>
 
 <template>
-  <section v-for="message in props.messages" v-bind:key="message.time">
+  <div
+      class="messages-list">
+    <div
+      v-for="message in props.messages" v-bind:key="message.time">
     <MessageApp
         v-bind:message="message" />
-  </section>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -21,10 +25,14 @@ const props = defineProps({
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#container {
+.messages-list {
+  border: 0.5vmin solid #333333;
   display: flex;
   flex-direction: column;
-  height: 100vmin;
+  height: 80vmin;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: flex-start;
 }
 
 </style>

@@ -20,16 +20,30 @@ function userLoggedIn(token) {
 </script>
 
 <template>
-  <chat-area-app v-if="props.token.value !== '' "
-                 :token="props.token.value"
-  />
-  <IdentifyApp v-else
-               v-on:user-logged-in="userLoggedIn"
-      :title="'Log In'"
-  />
+  <div class="container">
+    <chat-area-app v-if="props.token.value !== '' "
+                   :token="props.token.value"
+    />
+    <IdentifyApp v-else
+                 v-on:user-logged-in="userLoggedIn"
+        :title="'Log In'"
+    />
+
+  </div>
 
 </template>
 
 <style scoped>
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
+.container {
+
+  display: flex;
+  flex-direction: column;
+  border: 0.5vmin solid #333333;
+  height: 80vmin;
+}
 </style>

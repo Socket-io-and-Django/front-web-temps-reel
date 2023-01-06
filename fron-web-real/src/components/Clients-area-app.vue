@@ -10,6 +10,7 @@ const emit = defineEmits(['accept-to-chat']);
 </script>
 
 <template>
+  <div>
     <ul>
       <div v-for="client in props.clients" v-bind:key="client.id">
         <il>
@@ -20,7 +21,7 @@ const emit = defineEmits(['accept-to-chat']);
         </il>
       </div>
     </ul>
-
+  </div>
 </template>
 
 <style scoped>

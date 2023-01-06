@@ -93,30 +93,36 @@ function connectToSocket(token) {
 </script>
 
 <template>
-  <div class="container">
+  <div class="chat-area">
     <button-app
         v-show="!connected"
         v-on:btn-click="connectToSocket(props.token)"
         v-bind:text="'connect'"
         v-bind:color="'green'"
     />
-    <MessagesAreaApp v-bind:messages="messages" />
-    <SendMessageApp
-        v-on:send-new-message="sendMessage"
-        v-bind:messagesNumber="messages.length"
-    />
+    <div class="chat">
+      <MessagesAreaApp
+          v-if="connected"
+          v-bind:messages="messages" />
+      <SendMessageApp
+          v-if="askToJoin || userRoles.includes(4242)"
+          v-on:send-new-message="sendMessage"
+          v-bind:messagesNumber="messages.length"
+      />
+
+    </div>
     <ConsultantsAreaApp
         v-if="!askToJoin && availableConsultants.length !== 0 && !userRoles.includes(4242)"
         v-bind:consultants="availableConsultants"
         v-on:ask-to-chat="askToChat"
     />
     <ClientsAreaApp
-        v-if="waitingList.length !== 0"
+        v-if="waitingList.length !== 0 && userRoles.includes(4242)"
         v-bind:clients="waitingList"
         v-on:accept-to-chat="acceptToChat"
 
     />
-  <FooterApp />
+<!--  <FooterApp />-->
   </div>
 </template>
 
@@ -127,47 +133,42 @@ function connectToSocket(token) {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.container {
+.chat-area {
   display: flex;
-  flex-direction: column;
-  height: 100vmin;
-
-  border: 0.5vmin solid #333333;
+  /*flex-direction: column;*/
+  flex-wrap: wrap;
   height: 80vmin;
 }
-
-.chat-area {
-  margin-bottom: 40px;
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 70vmin;
 }
-
-.chat-area {
-  margin: 20px 0;
+.chat-area:first-child {
+  margin-right: auto;
+}
+.chat-area:last-child {
+  margin-left: auto;
 }
 
 .chat-control label {
   display: block;
 }
 
-.chat-area input {
-  width: 100%;
-  height: 40px;
-  margin: 5px;
-  padding: 3px 7px;
-  font-size: 17px;
-}
 
-.chat-area {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
-.chat-area label {
-  flex: 1;
-}
+/*.chat-area {*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  justify-content: space-between;*/
+/*}*/
 
-.chat-area input {
-  flex: 2;
-  height: 20px;
-}
+/*.chat-area label {*/
+/*  flex: 1;*/
+/*}*/
+
+/*.chat-area input {*/
+/*  flex: 2;*/
+/*  height: 20px;*/
+/*}*/
 </style>
