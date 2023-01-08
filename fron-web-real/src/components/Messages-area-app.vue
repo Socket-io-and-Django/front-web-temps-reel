@@ -26,7 +26,7 @@ const props = defineProps({
 }
 
 .messages-list {
-  border: 0.5vmin solid darkorange;
+  /*border: 0.5vmin solid darkorange;*/
 
 }
 

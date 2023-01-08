@@ -160,14 +160,14 @@ function connectToSocket(token) {
 }
 
 .container {
-  border: 0.5vmin solid red;
+  /*border: 0.5vmin solid red;*/
 
   display: grid;
   /*flex-direction: column;*/
   height: 70vmin;
 }
 .chat {
-  border: 0.5vmin solid green;
+  /*border: 0.5vmin solid green;*/
 
   display: grid;
   grid-template-columns: 5fr 3fr 1fr;
