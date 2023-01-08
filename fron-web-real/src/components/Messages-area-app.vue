@@ -26,13 +26,8 @@ const props = defineProps({
 }
 
 .messages-list {
-  border: 0.5vmin solid #333333;
-  display: flex;
-  flex-direction: column;
-  height: 80vmin;
-  overflow-y: auto;
-  overflow-x: hidden;
-  align-items: flex-start;
+  border: 0.5vmin solid darkorange;
+
 }
 
 </style>

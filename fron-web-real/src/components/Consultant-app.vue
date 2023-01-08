@@ -11,12 +11,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <div>
     <h3>
       {{props.consultant.username}}
     </h3>
-    <p>{{props.consultant.id}}</p>
-  </div>
   <button-app
       :text="'ask to joint'"
       v-on:btn-click="emit('ask-to-chat', props.consultant.id)"

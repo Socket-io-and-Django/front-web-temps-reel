@@ -10,7 +10,7 @@ WORKDIR /node
 
 RUN npm init -y
 
-RUN npm install -g @vue/cli
+#RUN npm install -g @vue/cli
 #CMD "npm init vue@latest -y"
 
 COPY . .

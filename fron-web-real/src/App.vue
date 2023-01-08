@@ -8,7 +8,7 @@ const token = {
 };
 
 async function Logout() {
-  const res = await fetch('http://localhost:3000/logout', {
+  const res = await fetch('http://localhost:9000/logout', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

@@ -12,10 +12,9 @@ const props = defineProps({
 
 <template>
   <div>
-    <h3>
+    <h4>
       {{props.client.username}}
-    </h3>
-    <p>{{props.client.id}}</p>
+    </h4>
   </div>
   <button-app
       :text="'accept Chat'"

@@ -24,6 +24,7 @@ function userLoggedIn(token) {
     <chat-area-app v-if="props.token.value !== '' "
                    :token="props.token.value"
     />
+
     <IdentifyApp v-else
                  v-on:user-logged-in="userLoggedIn"
         :title="'Log In'"
@@ -41,9 +42,7 @@ function userLoggedIn(token) {
 
 .container {
 
-  display: flex;
-  flex-direction: column;
-  border: 0.5vmin solid #333333;
+  display: grid;
   height: 80vmin;
 }
 </style>

@@ -9,6 +9,8 @@ import SendMessageApp from "@/components/Send-message-app.vue";
 import MessagesAreaApp from "@/components/Messages-area-app.vue";
 import ConsultantsAreaApp from "@/components/Consultants-area-app.vue";
 import ClientsAreaApp from "@/components/Clients-area-app.vue";
+import ChatBot from "@/components/ChatBot.vue";
+
 
 const messages = ref([]);
 const connected = ref(false);
@@ -19,38 +21,45 @@ const waitingList = ref([]);
 const userRoles = [];
 const props = defineProps({
   token: String,
-})
+});
+const busy = ref(false);
+const chatBot = ref(false);
 
+function startEndChatBot() {
+  chatBot.value = !chatBot.value;
+}
 function sendMessage(message) {
   socket.value.emit('chatMessage', message.text);
-  // messages.value.push(message);
 }
 function askToChat(id) {
   socket.value.emit('askToChat', id);
   askToJoin.value=true;
-  // messages.value.push(message);
+  busy.value = true;
+  messages.value.splice(1, messages.value.length -1);
 }
 
-// function waitingList(id) {
-//   socket.value.emit('waitingList');
-//   askToJoin.value=true;
-//   // messages.value.push(message);
-// }
 
 function acceptToChat(id) {
   socket.value.emit('acceptToChat', id);
-  console.log("acceptToChat")
-  // askToJoin.value=true;
-  // messages.value.push(message);
+  busy.value = true;
+  messages.value.splice(1, messages.value.length -1);
+
+}
+function leaveChat(){
+  socket.value.emit('leaveChat');
+  busy.value = false;
+  askToJoin.value=false;
+  messages.value.splice(1, messages.value.length -1);
 }
 const socket = ref({});
 function connectToSocket(token) {
-  // console.log("in connection front", token.accessToken)
-  socket.value = io("ws://localhost:9000", {
+
+  socket.value = io("ws://localhost:3000", {
     auth: {
       token: token
     }
   });
+
   socket.value.on("connect_error",(er) => {
     console.error("Oops! Authentication failed:", er.message, " , ", er.cause)
   })
@@ -66,13 +75,9 @@ function connectToSocket(token) {
     console.log("roles: ", userRoles)
   })
   socket.value.on('availableConsultants', (available) => {
-    console.log("availableConsultants  :", available)
-
-    available.forEach( constant => {
-      console.log("consultant", constant)
-      availableConsultants.value.push(constant);
-    })
-    console.log("availableConsultants", availableConsultants.value)
+    // console.log("availableConsultants  :", available)
+    availableConsultants.value = available
+    // console.log("availableConsultants", availableConsultants.value)
   })
   // message from server
   socket.value.on('message', (message) => {
@@ -82,10 +87,8 @@ function connectToSocket(token) {
   socket.value.on('waitingList', (clientsWaitingList) => {
 
       if(clientsWaitingList) {
-        clientsWaitingList.forEach( client => {
-          waitingList.value.push(client);
-        })
-          console.log('waitingList client: ', waitingList.value)
+        waitingList.value = clientsWaitingList
+          // console.log('waitingList client: ', waitingList.value)
 
     }
   })
@@ -93,37 +96,60 @@ function connectToSocket(token) {
 </script>
 
 <template>
-  <div class="chat-area">
-    <button-app
-        v-show="!connected"
-        v-on:btn-click="connectToSocket(props.token)"
-        v-bind:text="'connect'"
-        v-bind:color="'green'"
-    />
-    <div class="chat">
-      <MessagesAreaApp
-          v-if="connected"
-          v-bind:messages="messages" />
-      <SendMessageApp
-          v-if="askToJoin || userRoles.includes(4242)"
-          v-on:send-new-message="sendMessage"
-          v-bind:messagesNumber="messages.length"
+  <div class="container">
+      <ButtonApp
+          v-if="!connected"
+          v-on:btn-click="connectToSocket(props.token)"
+          v-bind:text="'Chat'"
+          v-bind:color="'gray'"
       />
+    <div class="chat-area" v-else>
+      <div class="chat" v-if="!chatBot">
+        <div>
+          <MessagesAreaApp
+              v-bind:messages="messages" />
+          <SendMessageApp
+              v-on:send-new-message="sendMessage"
+              v-bind:messagesNumber="messages.length"
+          />
 
+        </div>
+          <ConsultantsAreaApp
+              v-if="!askToJoin && !userRoles.includes(4242)"
+              v-show="availableConsultants.length !== 0"
+              v-bind:consultants="availableConsultants"
+              v-on:ask-to-chat="askToChat"
+          />
+          <ClientsAreaApp
+              v-if="userRoles.includes(4242)"
+              v-show="waitingList.length !== 0 "
+              v-bind:clients="waitingList"
+              v-on:accept-to-chat="acceptToChat"
+          />
+        <ButtonApp
+            v-if="!userRoles.includes(4242) && !busy"
+            :text="'Chat Bot'"
+            :color="'blue'"
+            @btn-click="startEndChatBot"
+        />
+        <ButtonApp
+            v-if="busy"
+            :text="'Leave Chat'"
+            :color="'red'"
+            @btn-click="leaveChat"
+        />
+      </div>
+
+      <div class="chat-bot-area" v-else>
+        <chat-bot
+            :socket="socket"
+            :token="props.token"
+            @close-chat-bot="startEndChatBot"
+        />
+      </div>
     </div>
-    <ConsultantsAreaApp
-        v-if="!askToJoin && availableConsultants.length !== 0 && !userRoles.includes(4242)"
-        v-bind:consultants="availableConsultants"
-        v-on:ask-to-chat="askToChat"
-    />
-    <ClientsAreaApp
-        v-if="waitingList.length !== 0 && userRoles.includes(4242)"
-        v-bind:clients="waitingList"
-        v-on:accept-to-chat="acceptToChat"
-
-    />
-<!--  <FooterApp />-->
   </div>
+
 </template>
 
 <style scoped>
@@ -133,16 +159,19 @@ function connectToSocket(token) {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.chat-area {
-  display: flex;
+.container {
+  border: 0.5vmin solid red;
+
+  display: grid;
   /*flex-direction: column;*/
-  flex-wrap: wrap;
-  height: 80vmin;
+  height: 70vmin;
 }
 .chat {
-  display: flex;
-  flex-direction: column;
-  height: 70vmin;
+  border: 0.5vmin solid green;
+
+  display: grid;
+  grid-template-columns: 5fr 3fr 1fr;
+  height: 60vmin;
 }
 .chat-area:first-child {
   margin-right: auto;

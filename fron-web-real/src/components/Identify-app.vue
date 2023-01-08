@@ -45,7 +45,7 @@ function toggleRegister() {
 }
 
 async function addUser(newUser) {
-  const res = await fetch('http://localhost:3000/register', {
+  const res = await fetch('http://localhost:9000/register', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
@@ -59,7 +59,7 @@ async function addUser(newUser) {
 }
 
 async function logInUser(user) {
-  const res = await fetch('http://localhost:3000/auth', {
+  const res = await fetch('http://localhost:9000/auth', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
