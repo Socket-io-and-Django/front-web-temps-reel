@@ -4,6 +4,7 @@
 import RegisterForm from "@/components/Register-form-app.vue";
 import LogInApp from "@/components/LogIn-app.vue";
 import ButtonApp from "@/components/Button-app.vue";
+import { useRoute } from 'vue-router';
 
 import { computed, ref, defineEmits, defineProps } from "vue";
 
@@ -24,8 +25,6 @@ const registered = {
   v: ref(true),
   textRegister: ref("Go To Register")
 };
-
-import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const homePage = computed(() => {
