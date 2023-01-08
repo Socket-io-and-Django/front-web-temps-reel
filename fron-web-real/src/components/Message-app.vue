@@ -27,6 +27,13 @@ const props = defineProps({
   display: grid;
   gap: 1vmin;
   grid-template-columns: 3fr 1fr;
+  color: white;
+  background: #2c3e50;
+  border-radius: 1.5vmin;
+  border-bottom: 0.5vmin solid white;
+  padding: 5px;
+  overflow-wrap: break-word;
+
 }
 
 #sender{
