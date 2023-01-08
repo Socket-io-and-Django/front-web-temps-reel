@@ -96,7 +96,7 @@ function connectToSocket(token) {
 </script>
 
 <template>
-  <div class="container">
+  <div class="chat-area-app">
       <ButtonApp
           v-if="!connected"
           v-on:btn-click="connectToSocket(props.token)"
@@ -159,7 +159,7 @@ function connectToSocket(token) {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.container {
+.chat-area-app {
   /*border: 0.5vmin solid red;*/
 
   display: grid;

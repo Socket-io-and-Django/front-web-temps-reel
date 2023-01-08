@@ -23,11 +23,10 @@ const props = defineProps({
 
 
 <style scoped>
-a {
-  color: #333333;
-}
-footer {
-  margin-top: 30px;
-  text-align: center;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5vmin;
 }
 </style>

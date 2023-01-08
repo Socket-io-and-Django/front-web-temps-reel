@@ -28,41 +28,73 @@ function userLoggedIn(token){
 </script>
 
 <template>
-  <HeaderApp v-if="token.accessToken.value !==''"
-      :username="token.username.value"/>
-  <router-link
-
-      v-on:user-logged-in="userLoggedIn"
-      to="/">Home</router-link> |
-  <router-link to="/about">About</router-link>
-  <router-view
-      :username="token.username"
-      :token="token.accessToken"
-  ></router-view>
-  <ButtonApp v-show="token.accessToken.value !==''"
-      :text="'LogOut'"
-  v-on:btn-click="Logout"/>
+  <div class="container">
+    <HeaderApp
+        v-show="token.accessToken.value !==''"
+        :username="token.username.value"/>
+    <router-link
+        v-on:user-logged-in="userLoggedIn"
+        to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+    <ButtonApp
+        v-show="token.accessToken.value !==''"
+        :text="'LogOut'"
+        v-on:btn-click="Logout"/>
+    <router-view
+        :username="token.username"
+        :token="token.accessToken"></router-view>
+  </div>
 </template>
 
 <style>
 #app {
+  display: grid;
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /*-webkit-font-smoothing: antialiased;*/
+  /*-moz-osx-font-smoothing: grayscale;*/
   text-align: center;
   color: #2c3e50;
 }
-
-nav {
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 ;
+}
+.container {
+  max-width: 80vmin;
+  margin: 30px auto;
+  overflow: auto;
+  min-height: 300px;
+  border: 1px solid steelblue;
   padding: 30px;
+  border-radius: 5px;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.btn {
+  display: inline-block;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 2vmin;
+  font-family: inherit;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+.btn:focus {
+  outline: none;
 }
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
 </style>

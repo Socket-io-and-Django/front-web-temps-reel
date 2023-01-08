@@ -10,6 +10,7 @@ const emit = defineEmits(['ask-to-chat']);
 </script>
 
 <template>
+  <div class="consultants-list">
     <div>Available Consultant</div>
       <div
           v-for="consultant in props.consultants" v-bind:key="consultant.id">
@@ -19,8 +20,13 @@ const emit = defineEmits(['ask-to-chat']);
               v-on:ask-to-chat="emit('ask-to-chat', consultant.id)"
           />
       </div>
+
+  </div>
 </template>
 
 <style scoped>
-
+.consultants-list{
+  display: flex;
+  flex-direction: column;
+}
 </style>

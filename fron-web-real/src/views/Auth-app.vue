@@ -20,7 +20,7 @@ function userLoggedIn(token) {
 </script>
 
 <template>
-  <div class="container">
+  <div class="app-area">
     <chat-area-app v-if="props.token.value !== '' "
                    :token="props.token.value"
     />
@@ -35,14 +35,9 @@ function userLoggedIn(token) {
 </template>
 
 <style scoped>
-*, *::before, *::after {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
-.container {
 
-  display: grid;
-  height: 80vmin;
+.app-area {
+
 }
 </style>

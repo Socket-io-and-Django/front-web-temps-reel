@@ -20,13 +20,9 @@ const props = defineProps({
 
 <style scoped>
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 .messages-list {
-  /*border: 0.5vmin solid darkorange;*/
+  display: flex;
+  flex-direction: column;
 
 }
 

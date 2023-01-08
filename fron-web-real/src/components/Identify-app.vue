@@ -112,5 +112,4 @@ async function logInUser(user) {
 </template>
 
 <style scoped>
-
 </style>
